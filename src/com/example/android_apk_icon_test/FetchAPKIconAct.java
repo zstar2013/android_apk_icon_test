@@ -29,18 +29,24 @@ public class FetchAPKIconAct extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//String path=Environment.getExternalStorageDirectory().getPath();
-		String path="/data/sdcard/";
-		//showUninstallAPKIcon(path+"test2.apk");
-		getUnistallApkIcon(this,path+ "test2.apk");
+		String path=Environment.getExternalStorageDirectory().getPath();
+		//String path="/mnt/sdcard/";
+		showUninstallAPKIcon(path+"/test2.apk");
+		getUnistallApkIcon(this,path+ "/test2.apk");
 	}
 
+	//通过pm获得apk图片
 	private void getUnistallApkIcon(Context context, String archiveFilePath) {
 		PackageManager pm = context.getPackageManager();
 		PackageInfo info = pm.getPackageArchiveInfo(archiveFilePath,
 				PackageManager.GET_ACTIVITIES);
 		if (info != null) {
 			ApplicationInfo appInfo = info.applicationInfo;
+			
+			//新版本后加上这两句可以便可以成功获得，如果报错轻注释掉
+			appInfo.sourceDir=archiveFilePath;
+            appInfo.publicSourceDir=archiveFilePath;
+            
 			Drawable inco = pm.getApplicationIcon(appInfo);
 			ImageView image = (ImageView) findViewById(R.id.apkIconByTradition);
 			image.setVisibility(View.VISIBLE);
@@ -50,6 +56,7 @@ public class FetchAPKIconAct extends Activity {
 	}
 
 	
+	//通过反射方法获得apk图片
 	private void showUninstallAPKIcon(String apkPath) {
 		String PATH_PackageParser = "android.content.pm.PackageParser";
 		String PATH_AssetManager = "android.content.res.AssetManager";
